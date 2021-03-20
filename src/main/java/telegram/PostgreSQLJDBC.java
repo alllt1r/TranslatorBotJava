@@ -1,14 +1,16 @@
 package telegram;
 
+import lombok.SneakyThrows;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class PostgreSQLJDBC
-{
+import static telegram.sqlRequest.Request.INSERT_INTO_USERS;
 
+public class PostgreSQLJDBC {
 
 
     public static void main(String[] args) {
@@ -36,7 +38,7 @@ public class PostgreSQLJDBC
             c.setAutoCommit(false);
 
             stmt = c.createStatement();
-            String sql = "DELETE FROM users WHERE id = " +  id;
+            String sql = "DELETE FROM users WHERE id = " + id;
             stmt.executeUpdate(sql);
             stmt.close();
             c.commit();
@@ -47,26 +49,35 @@ public class PostgreSQLJDBC
         }
     }
 
-    public void insertData(int id, String firstname, String lastname, String role) {
+    @SneakyThrows
+    public Connection connect() {
         Connection c = null;
+        Class.forName("org.postgresql.Driver");
+        c = DriverManager.getConnection("jdbc:postgresql://localhost:5432/" + System.getenv("DATABASE_NAME"),
+                System.getenv("SQLUSER"), System.getenv("SQLPASSWORD"));
+        c.setAutoCommit(false);
+        return c;
+    }
+
+    @SneakyThrows
+    public Statement createStatementFromConnection(Connection connection) {
         Statement stmt = null;
-        String role_new = null;
-        try {
-            Class.forName("org.postgresql.Driver");
-            c = DriverManager
-                    .getConnection("jdbc:postgresql://localhost:5432/" + System.getenv("DATABASE_NAME"),
-                            System.getenv("SQLUSER"), System.getenv("SQLPASSWORD"));
-            c.setAutoCommit(false);
-            stmt = c.createStatement();
-            String sql = "insert into users (Id, Firstname, Lastname, Role) values('" + id + "','" + firstname + "', '" + lastname + "', '" + role + "');";
-            stmt.executeUpdate(sql);
-            stmt.close();
-            c.commit();
-            c.close();
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
+        stmt = connection.createStatement();
+        return stmt;
+    }
+
+    @SneakyThrows
+    public void sendRequest(String sql, Statement statement) {
+        statement.executeUpdate(sql);
+        statement.close();
+        statement.getConnection().commit();
+        statement.getConnection().close();
+    }
+
+    @SneakyThrows
+    public void insertData(int id, String firstname, String lastname, String role) {
+        Statement statement = createStatementFromConnection(connect());
+        sendRequest(INSERT_INTO_USERS, statement);
     }
 
     public void updateData(int id, String newRole) {
@@ -192,7 +203,7 @@ public class PostgreSQLJDBC
             ResultSet rs = stmt.executeQuery("SELECT * FROM users;");
 
             while (rs.next()) {
-                listOfId.add("/" + rs.getString("id") + " " + rs.getString("firstname") + " " + rs.getString("lastname") + " " +  rs.getString("role"));
+                listOfId.add("/" + rs.getString("id") + " " + rs.getString("firstname") + " " + rs.getString("lastname") + " " + rs.getString("role"));
 
             }
             rs.close();

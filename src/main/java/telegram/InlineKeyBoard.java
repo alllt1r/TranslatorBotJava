@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 public class InlineKeyBoard {
     PostgreSQLJDBC comSQL = new PostgreSQLJDBC();
+
     public ArrayList<KeyboardRow> Keyboard1() {
         ArrayList<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
@@ -36,6 +37,7 @@ public class InlineKeyBoard {
         keyboard.add(keyboardSecondRow);
         return keyboard;
     }
+
     public ArrayList<KeyboardRow> Keyboard2() {
         ArrayList<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow keyboardRow_1 = new KeyboardRow();
@@ -56,6 +58,7 @@ public class InlineKeyBoard {
         keyboard.add(keyboardRow_3);
         return keyboard;
     }
+
     public ArrayList<KeyboardRow> Keyboard3() {
         ArrayList<KeyboardRow> keyboard = new ArrayList<>();
         KeyboardRow keyboardFirstRow = new KeyboardRow();
@@ -156,12 +159,24 @@ public class InlineKeyBoard {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         ArrayList<KeyboardRow> newKeyboard = new ArrayList<>();
         switch (number_of_keyboard) {
-            case 1: newKeyboard = Keyboard1(); break;
-            case 2: newKeyboard = Keyboard2(); break;
-            case 3: newKeyboard = Keyboard3(); break;
-            case 4: newKeyboard = Keyboard4(); break;
-            case 5: newKeyboard = Keyboard5(); break;
-            case 6: newKeyboard = Keyboard6(); break;
+            case 1:
+                newKeyboard = Keyboard1();
+                break;
+            case 2:
+                newKeyboard = Keyboard2();
+                break;
+            case 3:
+                newKeyboard = Keyboard3();
+                break;
+            case 4:
+                newKeyboard = Keyboard4();
+                break;
+            case 5:
+                newKeyboard = Keyboard5();
+                break;
+            case 6:
+                newKeyboard = Keyboard6();
+                break;
         }
 
         keyboardMarkup.setKeyboard(newKeyboard);
