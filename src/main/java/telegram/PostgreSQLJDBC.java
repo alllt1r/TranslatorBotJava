@@ -77,7 +77,7 @@ public class PostgreSQLJDBC {
     @SneakyThrows
     public void insertData(int id, String firstname, String lastname, String role) {
         Statement statement = createStatementFromConnection(connect());
-        sendRequest(INSERT_INTO_USERS, statement);
+        sendRequest(String.format(INSERT_INTO_USERS, "sfd"), statement );
     }
 
     public void updateData(int id, String newRole) {
