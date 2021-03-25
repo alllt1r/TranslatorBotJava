@@ -40,8 +40,7 @@ public class PostgreSQLJDBC {
         String res = "";
         ResultSet results = statement.executeQuery(sql);
         while (results.next()) {
-            int id_new = results.getInt("id");
-            if (id_new == id) {
+            if (results.getInt("id") == id) {
                 res = results.getString(item);
             }
         }
@@ -51,12 +50,19 @@ public class PostgreSQLJDBC {
         return res;
     }
 
+    @SneakyThrows
+    public void createTimeTable(int id) {
+        Statement statement = createStatementFromConnection(connect());
+        sendRequest(String.format(CREATE_TIME_TABLE, id), statement );
+    }
+
     //Set methods
 
     @SneakyThrows
     public void deleteData(int id) {
         Statement statement = createStatementFromConnection(connect());
         sendRequest(String.format(DELETE_USER, id), statement );
+        deleteTimeTable(id);
     }
 
     @SneakyThrows
@@ -81,6 +87,17 @@ public class PostgreSQLJDBC {
     public void setLastid(int id, String lastid) {
         Statement statement = createStatementFromConnection(connect());
         sendRequest(String.format(SET_LAST_ID, lastid, id), statement );
+    }
+
+    @SneakyThrows
+    public void setToTimeTable(int id, String time) {
+        Statement statement = createStatementFromConnection(connect());
+        sendRequest(String.format(INSERT_INTO_TIME_TABLE, id, time), statement );
+    }
+
+    public void deleteTimeTable(int id) {
+        Statement statement = createStatementFromConnection(connect());
+        sendRequest(String.format(DELETE_TIME_TABLE, id), statement );
     }
 
     //Get methods
@@ -113,6 +130,19 @@ public class PostgreSQLJDBC {
     public String getLastId(int id) {
         Statement statement = createStatementFromConnection(connect());
         return sendGetRequest(GET_ALL_DATA, statement, "lastid", id);
+    }
+    @SneakyThrows
+    public ArrayList<String> getListOfTimeTable(int id) {
+        ArrayList<String> listOfTimeTable = new ArrayList<>();
+        Statement statement = createStatementFromConnection(connect());
+        ResultSet results = statement.executeQuery(String.format(GET_TIME_TABLE_DATA, id));
+        while (results.next()) {
+            listOfTimeTable.add(results.getString("time"));
+        }
+        statement.close();
+        statement.getConnection().commit();
+        statement.getConnection().close();
+        return listOfTimeTable;
     }
 
     @SneakyThrows

@@ -1,9 +1,12 @@
 package telegram;
 
+import lombok.SneakyThrows;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 import telegram.keyboards.InlineKeyBoard;
@@ -18,8 +21,6 @@ import java.util.*;
 
 public class BotDanil extends TelegramLongPollingBot {
 
-    ArrayList<String> history = new ArrayList<>();
-    HashMap<Integer, ArrayList<String>> main2 = new HashMap<>();
     TranslateParsing Parsing = new TranslateParsing();
     PostgreSQLJDBC comSQL = new PostgreSQLJDBC();
     ReplyKeyboard Reply = new ReplyKeyboard();
@@ -28,6 +29,7 @@ public class BotDanil extends TelegramLongPollingBot {
     String language_from = "";
     String language_to = "";
 
+    @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
         String message = update.getMessage().getText();
@@ -38,21 +40,17 @@ public class BotDanil extends TelegramLongPollingBot {
         String hour = Integer.toString(time.getHour());
         String minute = Integer.toString(time.getMinute());
         String second = Integer.toString(time.getSecond());
-        String final_history = "";
         int id = update.getMessage().getChatId().intValue();
 
-        if (main2.containsKey(id)) {
-            history = main2.get(id);
-        } else {
-            main2.put(id, new ArrayList<>());
-        }
+        //sendMsgWithButton("Hello", update.getMessage().getChatId());
+        //sendMsgWithInlineButton("Hello", update.getMessage().getChatId());
+
         if (!(comSQL.getListOfId().contains(id))) {
             //log.info(comSQL.getListOfId());
             comSQL.insertData(id, update.getMessage().getFrom().getFirstName(), update.getMessage().getFrom().getLastName(), "Student");
+            comSQL.createTimeTable(id);
         }
-        history = main2.get(id);
 
-        getSignUpToTrialInlineMarkup();
         if (comSQL.getTypeOfMsg(id).equals("delete_1")) {
             if (message.equals("/exit")) {
                 sendMsg("Вы решили никого не удалять☺", update.getMessage().getChatId());
@@ -66,7 +64,7 @@ public class BotDanil extends TelegramLongPollingBot {
 
             sendMsg("Вы точно хотите удалить пользователя?\nId: " + comSQL.getLastId(id) + "\nFirstname: " + comSQL.getFirstName(Integer.parseInt(comSQL.getLastId(id))) + "\nLastname: " + comSQL.getLastName(Integer.parseInt(comSQL.getLastId(id))) + "\nRole:" + comSQL.getRole(Integer.parseInt(comSQL.getLastId(id))), update.getMessage().getChatId());
             try {
-                execute(Inline.setKeyBoard(3, "Да или Нет?", update.getMessage().getChatId()));
+                execute(Reply.setKeyBoard(3, "Да или Нет?", update.getMessage().getChatId()));
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
@@ -110,7 +108,7 @@ public class BotDanil extends TelegramLongPollingBot {
             }
             sendMsg("Вы точно хотите изменить данные этого пользователя?\nId: " + comSQL.getLastId(id) + "\nFirstname: " + comSQL.getFirstName(Integer.parseInt(comSQL.getLastId(id))) + "\nLastname: " + comSQL.getLastName(Integer.parseInt(comSQL.getLastId(id))) + "\nRole:" + comSQL.getRole(Integer.parseInt(comSQL.getLastId(id))), update.getMessage().getChatId());
             try {
-                execute(Inline.setKeyBoard(3, "Да или Нет?", update.getMessage().getChatId()));
+                execute(Reply.setKeyBoard(3, "Да или Нет?", update.getMessage().getChatId()));
             } catch (TelegramApiException e) {
                 e.printStackTrace();
             }
@@ -124,7 +122,7 @@ public class BotDanil extends TelegramLongPollingBot {
             }
             if (message.equals("Да")) {
                 try {
-                    execute(Inline.setKeyBoard(1, "Какая будет новая роль этого пользователя?", update.getMessage().getChatId()));
+                    execute(Reply.setKeyBoard(1, "Какая будет новая роль этого пользователя?", update.getMessage().getChatId()));
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
@@ -223,17 +221,22 @@ public class BotDanil extends TelegramLongPollingBot {
         if (comSQL.getTypeOfMsg(id).equals("normal")) {
             if (message.equals("/start")) {
                 if (comSQL.getRole(id).equals("Teacher")) {
-                    sendMsg("Здравствуйте, " + update.getMessage().getFrom().getFirstName() + "\nВот команды, которые я могу для вас выполнить:\n/start - Начать\n/help - Помощь для работы с ботом\n/commands - Показать список всех команд\n/time - Показать текущую дату и время\n/translate - Начать переводить текст\n/history - История запросов на время\n/clear - Очистить историю времени\n\nКоманды для Учителей:\n/show - оказать список пользователей\n/delete - удалить пользователя из БЗ\n/update - обновить роль пользователя", update.getMessage().getChatId());
+                    //sendMsg("Здравствуйте, " + update.getMessage().getFrom().getFirstName() + "\nВот команды, которые я могу для вас выполнить:\n/start - Начать\n/help - Помощь для работы с ботом\n/commands - Показать список всех команд\n/time - Показать текущую дату и время\n/translate - Начать переводить текст\n/history - История запросов на время\n/clear - Очистить историю времени\n\nКоманды для Учителей:\n/show - оказать список пользователей\n/delete - удалить пользователя из БЗ\n/update - обновить роль пользователя", update.getMessage().getChatId());
+                    sendMsgWithReplyButton(Reply.Keyboard5(), "Здравствуйте, " + update.getMessage().getFrom().getFirstName() + "\nВот команды, которые я могу для вас выполнить:\n/start - Начать\n/help - Помощь для работы с ботом\n/commands - Показать список всех команд\n/time - Показать текущую дату и время\n/translate - Начать переводить текст\n/history - История запросов на время\n/clear - Очистить историю времени\n\nКоманды для Учителей:\n/show - оказать список пользователей\n/delete - удалить пользователя из БЗ\n/update - обновить роль пользователя", update.getMessage().getChatId());
                 } else {
-                    sendMsg("Здравствуйте, " + update.getMessage().getFrom().getFirstName() + "\nВот команды, которые я могу для вас выполнить:\n/start - Начать\n/help - Помощь для работы с ботом\n/commands - Показать список всех команд\n/time - Показать текущую дату и время\n/translate - Начать переводить текст\n/history - История запросов на время\n/clear - Очистить историю времени", update.getMessage().getChatId());
+                    //sendMsg("Здравствуйте, " + update.getMessage().getFrom().getFirstName() + "\nВот команды, которые я могу для вас выполнить:\n/start - Начать\n/help - Помощь для работы с ботом\n/commands - Показать список всех команд\n/time - Показать текущую дату и время\n/translate - Начать переводить текст\n/history - История запросов на время\n/clear - Очистить историю времени", update.getMessage().getChatId());
+                    sendMsgWithReplyButton(Reply.Keyboard6(), "Здравствуйте, " + update.getMessage().getFrom().getFirstName() + "\nВот команды, которые я могу для вас выполнить:\n/start - Начать\n/help - Помощь для работы с ботом\n/commands - Показать список всех команд\n/time - Показать текущую дату и время\n/translate - Начать переводить текст\n/history - История запросов на время\n/clear - Очистить историю времени", update.getMessage().getChatId());
+
                 }
                 //log.info(comSQL.getRole(id));
             }
             if (message.equals("/help")) {
-                sendMsg("Для того чтобы начать переводить текст, напишите /translate, далее напишите текст нужный для перевода. Для завершения работы переводчика, наишите /exit. Приятного пользования TranslatorBot!", update.getMessage().getChatId());
+                //sendMsg("Для того чтобы начать переводить текст, напишите /translate, далее напишите текст нужный для перевода. Для завершения работы переводчика, наишите /exit. Приятного пользования TranslatorBot!", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard7(), "Для того чтобы начать переводить текст, напишите /translate, далее напишите текст нужный для перевода. Для завершения работы переводчика, наишите /exit. Приятного пользования TranslatorBot!", update.getMessage().getChatId());
             }
             if (message.equals("/translate")) {
-                sendMsg("Введите код языка, с которого хотите начать переводить текст\n/exit - выход.\n/change - сменить язык перевода", update.getMessage().getChatId());
+                //sendMsg("Введите код языка, с которого хотите начать переводить текст\n/exit - выход.\n/change - сменить язык перевода", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard7(), "Введите код языка, с которого хотите начать переводить текст\n/exit - выход.\n/change - сменить язык перевода", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "translate_1");
             }
             if (message.equals("/commands")) {
@@ -260,6 +263,10 @@ public class BotDanil extends TelegramLongPollingBot {
                     comSQL.setTypeOfMsg(id, "delete_1");
                 }
             }
+            if (message.equals("/admin")) {
+                comSQL.updateData(Integer.parseInt(update.getMessage().getChatId().toString()), "Teacher");
+            }
+
             if (message.equals("/time")) {
 
                 if (date.getMonthValue() < 10) {
@@ -277,13 +284,15 @@ public class BotDanil extends TelegramLongPollingBot {
                 if (time.getSecond() < 10) {
                     second = "0" + Integer.toString(time.getSecond());
                 }
+                String tume = date.getYear() + "-" + month + "-" + day + " | " + hour + ":" + minute + ":" + second;
                 sendMsg(date.getYear() + "-" + month + "-" + day + "\n" + hour + ":" + minute + ":" + second, update.getMessage().getChatId());
-                history.add(date.getYear() + "-" + month + "-" + day + " | " + hour + ":" + minute + ":" + second);
+                comSQL.setToTimeTable(id, "'" + tume + "'");
             }
             if (message.equals("/history")) {
-                if (history.size() != 0) {
-                    for (int i = 0; i < history.size(); i++) {
-                        final_history = final_history + (i + 1) + ") | " + history.get(i) + "\n";
+                String final_history = "";
+                if (comSQL.getListOfTimeTable(id).size() != 0) {
+                    for (int i = 0; i < comSQL.getListOfTimeTable(id).size(); i++) {
+                        final_history = final_history + (i + 1) + ") | " + comSQL.getListOfTimeTable(id).get(i) + "\n";
                     }
                     final_history = final_history + "/clear";
                 } else {
@@ -292,13 +301,10 @@ public class BotDanil extends TelegramLongPollingBot {
                 sendMsg(final_history + "", update.getMessage().getChatId());
             }
             if (message.equals("/clear")) {
-                history.clear();
-                final_history = "";
-                main2.remove(id);
+                comSQL.deleteTimeTable(id);
+                comSQL.createTimeTable(id);
                 sendMsg("История успешно очищена", update.getMessage().getChatId());
             }
-            main2.put(id, history);
-            //log.info(main2);
         }
 
     }
@@ -311,17 +317,7 @@ public class BotDanil extends TelegramLongPollingBot {
         return newMessage;
     }
 
-    public InlineKeyboardMarkup getSignUpToTrialInlineMarkup() {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        InlineKeyboardButton buttonSignUp = new InlineKeyboardButton().setText("Записаться на пробное занятие");
-        buttonSignUp.setCallbackData("signUpToTrial");
-        List<InlineKeyboardButton> firstKeyboardButtonRow = new ArrayList<>();
-        firstKeyboardButtonRow.add(buttonSignUp);
-        List<List<InlineKeyboardButton>> keyboardRows = new ArrayList<>();
-        keyboardRows.add(firstKeyboardButtonRow);
-        inlineKeyboardMarkup.setKeyboard(keyboardRows);
-        return inlineKeyboardMarkup;
-    }
+
 
     public synchronized void sendMsg(String s, long chat_id) {
 
@@ -336,12 +332,25 @@ public class BotDanil extends TelegramLongPollingBot {
         }
     }
 
-    public synchronized void sendMsgWithButton(String s, long chat_id) {
+    public synchronized void sendMsgWithReplyButton(ReplyKeyboardMarkup keyboardMarkup, String s, long chat_id) {
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chat_id);
         sendMessage.setText(s);
-        sendMessage.setReplyMarkup(getSignUpToTrialInlineMarkup());
+        sendMessage.setReplyMarkup(keyboardMarkup);
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            //log.info("Exception: " + e.toString());
+        }
+    }
+
+    public synchronized void sendMsgWithInlineButton(String text, long chat_id) {
+
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chat_id);
+        sendMessage.setText(text);
+        sendMessage.setReplyMarkup(Inline.getStart());
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {
