@@ -1,2 +1,4 @@
 # Project exclude paths
 /target/
+/demoApplication.log
+/demoApplication.log.1
