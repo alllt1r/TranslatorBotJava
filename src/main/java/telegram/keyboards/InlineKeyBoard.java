@@ -15,9 +15,6 @@ import java.util.List;
 public class InlineKeyBoard {
     PostgreSQLJDBC comSQL = new PostgreSQLJDBC();
 
-
-
-
     public InlineKeyboardMarkup getStart() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         InlineKeyboardButton buttonSignUp = new InlineKeyboardButton().setText("Начать");
@@ -29,7 +26,4 @@ public class InlineKeyBoard {
         inlineKeyboardMarkup.setKeyboard(keyboardRows);
         return inlineKeyboardMarkup;
     }
-
-
-
 }
