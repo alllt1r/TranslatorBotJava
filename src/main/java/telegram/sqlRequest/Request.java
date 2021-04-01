@@ -12,3 +12,4 @@ public class Request {
     public static final String DELETE_TIME_TABLE = "DROP TABLE IF EXISTS table_%s";
     public static final String GET_TIME_TABLE_DATA = "SELECT * FROM table_%s;";
 }
+
