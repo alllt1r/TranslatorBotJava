@@ -29,6 +29,8 @@ public class BotDanil extends TelegramLongPollingBot {
     String language_from = "";
     String language_to = "";
 
+
+
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
@@ -53,44 +55,40 @@ public class BotDanil extends TelegramLongPollingBot {
 
         if (comSQL.getTypeOfMsg(id).equals("delete_1")) {
             if (message.equals("/exit")) {
-                sendMsg("Вы решили никого не удалять☺", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы решили никого не удалять☺", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "normal");
                 comSQL.setLastid(id, "");
-            }
-            comSQL.setLastid(id, "");
-            for (int i = 1; i < update.getMessage().getText().length(); i++) {
-                comSQL.setLastid(id, comSQL.getLastId(id) + update.getMessage().getText().toCharArray()[i]);
-            }
+            } else {
+                comSQL.setLastid(id, "");
+                for (int i = 1; i < update.getMessage().getText().length(); i++) {
+                    comSQL.setLastid(id, comSQL.getLastId(id) + update.getMessage().getText().toCharArray()[i]);
+                }
 
-            sendMsg("Вы точно хотите удалить пользователя?\nId: " + comSQL.getLastId(id) + "\nFirstname: " + comSQL.getFirstName(Integer.parseInt(comSQL.getLastId(id))) + "\nLastname: " + comSQL.getLastName(Integer.parseInt(comSQL.getLastId(id))) + "\nRole:" + comSQL.getRole(Integer.parseInt(comSQL.getLastId(id))), update.getMessage().getChatId());
-            try {
-                execute(Reply.setKeyBoard(3, "Да или Нет?", update.getMessage().getChatId()));
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
+                sendMsg("Вы точно хотите удалить пользователя?\nId: " + comSQL.getLastId(id) + "\nFirstname: " + comSQL.getFirstName(Integer.parseInt(comSQL.getLastId(id))) + "\nLastname: " + comSQL.getLastName(Integer.parseInt(comSQL.getLastId(id))) + "\nRole:" + comSQL.getRole(Integer.parseInt(comSQL.getLastId(id))), update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard3(), "Да или Нет?", update.getMessage().getChatId());
+                comSQL.setTypeOfMsg(id, "delete_2");
             }
-            comSQL.setTypeOfMsg(id, "delete_2");
         }
         if (comSQL.getTypeOfMsg(id).equals("delete_2")) {
             if (message.equals("/exit")) {
-                sendMsg("Вы решили никого не удалять☺", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы решили никого не удалять☺", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "normal");
                 comSQL.setLastid(id, "");
             }
             if (message.equals("Да")) {
                 //log.info(Integer.parseInt(comSQL.getLastId(id)) + "1");
-                try {
+
                     //log.info(Integer.parseInt(comSQL.getLastId(id)) + "2");
-                    comSQL.deleteData(Integer.parseInt(comSQL.getLastId(id)));
+
                     //log.info(Integer.parseInt(comSQL.getLastId(id)) + "3");
-                    sendMsg("Вы успешно удалили пользователя с id: " + comSQL.getLastId(id), update.getMessage().getChatId());
-                    comSQL.setTypeOfMsg(id, "normal");
+                    sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы успешно удалили пользователя с id: " + comSQL.getLastId(id), update.getMessage().getChatId());
+                    comSQL.deleteData(Integer.parseInt(comSQL.getLastId(id)));
                     comSQL.setLastid(id, "");
-                } catch (Exception e) {
-                    sendMsg("Попробуйте ещё раз!\n/exit - вернуться к начальным функциям", update.getMessage().getChatId());
-                }
+                    comSQL.setTypeOfMsg(id, "normal");
+
             }
             if (message.equals("Нет")) {
-                sendMsg("Вы решили никого не удалять☺", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы решили никого не удалять☺", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "normal");
                 comSQL.setLastid(id, "");
             }
@@ -98,57 +96,50 @@ public class BotDanil extends TelegramLongPollingBot {
 
         if (comSQL.getTypeOfMsg(id).equals("update_1")) {
             if (message.equals("/exit")) {
-                sendMsg("Вы вернулись к начальным фунциям", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы вернулись к начальным фунциям", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "normal");
                 comSQL.setLastid(id, "");
+            } else {
+                comSQL.setLastid(id, "");
+                for (int i = 1; i < update.getMessage().getText().length(); i++) {
+                    comSQL.setLastid(id, comSQL.getLastId(id) + update.getMessage().getText().toCharArray()[i]);
+                }
+                sendMsg("Вы точно хотите изменить данные этого пользователя?\nId: " + comSQL.getLastId(id) + "\nFirstname: " + comSQL.getFirstName(Integer.parseInt(comSQL.getLastId(id))) + "\nLastname: " + comSQL.getLastName(Integer.parseInt(comSQL.getLastId(id))) + "\nRole:" + comSQL.getRole(Integer.parseInt(comSQL.getLastId(id))), update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard3(), "Да или Нет?", update.getMessage().getChatId());
+                comSQL.setTypeOfMsg(id, "update_2");
             }
-            comSQL.setLastid(id, "");
-            for (int i = 1; i < update.getMessage().getText().length(); i++) {
-                comSQL.setLastid(id, comSQL.getLastId(id) + update.getMessage().getText().toCharArray()[i]);
-            }
-            sendMsg("Вы точно хотите изменить данные этого пользователя?\nId: " + comSQL.getLastId(id) + "\nFirstname: " + comSQL.getFirstName(Integer.parseInt(comSQL.getLastId(id))) + "\nLastname: " + comSQL.getLastName(Integer.parseInt(comSQL.getLastId(id))) + "\nRole:" + comSQL.getRole(Integer.parseInt(comSQL.getLastId(id))), update.getMessage().getChatId());
-            try {
-                execute(Reply.setKeyBoard(3, "Да или Нет?", update.getMessage().getChatId()));
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-            comSQL.setTypeOfMsg(id, "update_2");
         }
         if (comSQL.getTypeOfMsg(id).equals("update_2")) {
             if (message.equals("/exit")) {
-                sendMsg("Вы вернулись к начальным фунциям", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы вернулись к начальным фунциям", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "normal");
                 comSQL.setLastid(id, "");
             }
             if (message.equals("Да")) {
-                try {
-                    execute(Reply.setKeyBoard(1, "Какая будет новая роль этого пользователя?", update.getMessage().getChatId()));
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+                sendMsgWithReplyButton(Reply.Keyboard1(),"Какая будет новая роль этого пользователя?", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "update_3");
             }
             if (message.equals("Нет")) {
-                sendMsg("Вы вернулись к начальным фунциям", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы вернулись к начальным фунциям", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "normal");
                 comSQL.setLastid(id, "");
             }
         }
         if (comSQL.getTypeOfMsg(id).equals("update_3")) {
             if (message.equals("/exit")) {
-                sendMsg("Вы вернулись к начальным фунциям", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы вернулись к начальным фунциям", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "normal");
                 comSQL.setLastid(id, "");
             }
             if (message.equals("Student")) {
                 comSQL.updateData(Integer.parseInt(comSQL.getLastId(id)), "Student");
-                sendMsg("Вы изменили роль пользователя с id: " + comSQL.getLastId(id) + "\nНовая роль: Student", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы изменили роль пользователя с id: " + comSQL.getLastId(id) + "\nНовая роль: Student", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "normal");
                 comSQL.setLastid(id, "");
             }
             if (message.equals("Teacher")) {
                 comSQL.updateData(Integer.parseInt(comSQL.getLastId(id)), "Teacher");
-                sendMsg("Вы изменили роль пользователя с id: " + comSQL.getLastId(id) + "\nНовая роль: Teacher", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы изменили роль пользователя с id: " + comSQL.getLastId(id) + "\nНовая роль: Teacher", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "normal");
                 comSQL.setLastid(id, "");
             }
@@ -157,16 +148,16 @@ public class BotDanil extends TelegramLongPollingBot {
 
         if (comSQL.getTypeOfMsg(id).equals("translate_3")) {
             if (message.equals("/exit")) {
-                sendMsg("Вы вернулись к начальным функциям", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы вернулись к начальным функциям", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "normal");
             } else if (message.equals("/change")) {
-                sendMsg("Введите код языка, с которого хотите начать переводить текст\n/exit - выход.\n/change - сменить язык перевода", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard7(),"Введите код языка, с которого хотите начать переводить текст\n/exit - выход.\n/change - сменить язык перевода", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "translate_1");
             } else {
                 try {
                     if (Parsing.TranslateText("Hello", language_to, language_from).get("error_code").equals(200)) {
                         sendMsg(Parsing.TranslateText(message, language_to, language_from).get("message_new").toString(), update.getMessage().getChatId());
-                        sendMsg("/exit - выход\n/change - сменить язык перевода", update.getMessage().getChatId());
+                        sendMsgWithReplyButton(Reply.Keyboard7(),"/exit - выход\n/change - сменить язык перевода", update.getMessage().getChatId());
                     } else {
                         sendMsg("Мы обнаружили ошибку, введите текст заново", update.getMessage().getChatId());
                     }
@@ -177,19 +168,19 @@ public class BotDanil extends TelegramLongPollingBot {
         }
         if (comSQL.getTypeOfMsg(id).equals("translate_2")) {
             if (message.equals("/exit")) {
-                sendMsg("Вы вернулись к начальным функциям", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы вернулись к начальным функциям", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "normal");
             } else if (message.equals("/change")) {
-                sendMsg("Введите код языка, с которого хотите начать переводить текст\n/exit - выход.\n/change - сменить язык перевода", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard7(),"Введите код языка, с которого хотите начать переводить текст\n/exit - выход.\n/change - сменить язык перевода", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "translate_1");
             } else {
                 language_to = message.toLowerCase(Locale.ROOT);
                 try {
                     if (Parsing.TranslateText("Hello", language_to, language_from).get("error_code").equals(200)) {
-                        sendMsg("Перевод будет происходить на язык: " + language_to, update.getMessage().getChatId());
+                        sendMsgWithReplyButton(Reply.Keyboard7(),"Перевод будет происходить на язык: " + language_to, update.getMessage().getChatId());
                         comSQL.setTypeOfMsg(id, "translate_3");
                     } else {
-                        sendMsg("Мы не смогли найти язык " + language_to + ", попробуйте ввести его заново", update.getMessage().getChatId());
+                        sendMsgWithReplyButton(Reply.Keyboard7(),"Мы не смогли найти язык " + language_to + ", попробуйте ввести его заново", update.getMessage().getChatId());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -198,7 +189,7 @@ public class BotDanil extends TelegramLongPollingBot {
         }
         if (comSQL.getTypeOfMsg(id).equals("translate_1")) {
             if (message.equals("/exit")) {
-                sendMsg("Вы вернулись к начальным функциям", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)),"Вы вернулись к начальным функциям", update.getMessage().getChatId());
                 comSQL.setTypeOfMsg(id, "normal");
             } else if (message.equals("/change")) {
                 sendMsg("У вас ещё не выбран язык", update.getMessage().getChatId());
@@ -222,7 +213,7 @@ public class BotDanil extends TelegramLongPollingBot {
             if (message.equals("/start")) {
                 if (comSQL.getRole(id).equals("Teacher")) {
                     //sendMsg("Здравствуйте, " + update.getMessage().getFrom().getFirstName() + "\nВот команды, которые я могу для вас выполнить:\n/start - Начать\n/help - Помощь для работы с ботом\n/commands - Показать список всех команд\n/time - Показать текущую дату и время\n/translate - Начать переводить текст\n/history - История запросов на время\n/clear - Очистить историю времени\n\nКоманды для Учителей:\n/show - оказать список пользователей\n/delete - удалить пользователя из БЗ\n/update - обновить роль пользователя", update.getMessage().getChatId());
-                    sendMsgWithReplyButton(Reply.Keyboard5(), "Здравствуйте, " + update.getMessage().getFrom().getFirstName() + "\nВот команды, которые я могу для вас выполнить:\n/start - Начать\n/help - Помощь для работы с ботом\n/commands - Показать список всех команд\n/time - Показать текущую дату и время\n/translate - Начать переводить текст\n/history - История запросов на время\n/clear - Очистить историю времени\n\nКоманды для Учителей:\n/show - оказать список пользователей\n/delete - удалить пользователя из БЗ\n/update - обновить роль пользователя", update.getMessage().getChatId());
+                    sendMsgWithReplyButton(Reply.Keyboard5(), "Здравствуйте, " + update.getMessage().getFrom().getFirstName() + "\nВот команды, которые я могу для вас выполнить:\n/start - Начать\n/help - Помощь для работы с ботом\n/commands - Показать список всех команд\n/time - Показать текущую дату и время\n/translate - Начать переводить текст\n/history - История запросов на время\n/clear - Очистить историю времени\n\nКоманды для Учителей:\n/show - Показать список пользователей\n/delete - Удалить пользователя из БД\n/update - Обновить роль пользователя", update.getMessage().getChatId());
                 } else {
                     //sendMsg("Здравствуйте, " + update.getMessage().getFrom().getFirstName() + "\nВот команды, которые я могу для вас выполнить:\n/start - Начать\n/help - Помощь для работы с ботом\n/commands - Показать список всех команд\n/time - Показать текущую дату и время\n/translate - Начать переводить текст\n/history - История запросов на время\n/clear - Очистить историю времени", update.getMessage().getChatId());
                     sendMsgWithReplyButton(Reply.Keyboard6(), "Здравствуйте, " + update.getMessage().getFrom().getFirstName() + "\nВот команды, которые я могу для вас выполнить:\n/start - Начать\n/help - Помощь для работы с ботом\n/commands - Показать список всех команд\n/time - Показать текущую дату и время\n/translate - Начать переводить текст\n/history - История запросов на время\n/clear - Очистить историю времени", update.getMessage().getChatId());
@@ -232,7 +223,7 @@ public class BotDanil extends TelegramLongPollingBot {
             }
             if (message.equals("/help")) {
                 //sendMsg("Для того чтобы начать переводить текст, напишите /translate, далее напишите текст нужный для перевода. Для завершения работы переводчика, наишите /exit. Приятного пользования TranslatorBot!", update.getMessage().getChatId());
-                sendMsgWithReplyButton(Reply.Keyboard7(), "Для того чтобы начать переводить текст, напишите /translate, далее напишите текст нужный для перевода. Для завершения работы переводчика, наишите /exit. Приятного пользования TranslatorBot!", update.getMessage().getChatId());
+                sendMsgWithReplyButton(Reply.Keyboard4(comSQL.getRole(id)), "Для того чтобы начать переводить текст, напишите /translate, далее напишите текст нужный для перевода. Для завершения работы переводчика, наишите /exit. Приятного пользования TranslatorBot!", update.getMessage().getChatId());
             }
             if (message.equals("/translate")) {
                 //sendMsg("Введите код языка, с которого хотите начать переводить текст\n/exit - выход.\n/change - сменить язык перевода", update.getMessage().getChatId());
@@ -241,25 +232,25 @@ public class BotDanil extends TelegramLongPollingBot {
             }
             if (message.equals("/commands")) {
                 if (comSQL.getRole(id).equals("Teacher")) {
-                    sendMsg("/start - Начать\n/help - Помощь\n/commands - Все команды\n/time - Время и дата\n/translate - Начать перевод\n/exit - Остановить перевод\n/history - История просмотра времени\n/clear - Очистить историю времени\n/show - Показать список пользователей\n/delete - Удалить пользователя из БЗ\n/update - Обновить роль пользователя", update.getMessage().getChatId());
+                    sendMsgWithReplyButton(Reply.Keyboard5(), "/start - Начать\n/help - Помощь\n/commands - Все команды\n/time - Время и дата\n/translate - Начать перевод\n/exit - Остановить перевод\n/history - История просмотра времени\n/clear - Очистить историю времени\n/show - Показать список пользователей\n/delete - Удалить пользователя из БД\n/update - Обновить роль пользователя", update.getMessage().getChatId());
                 } else {
-                    sendMsg("/start - Начать\n/help - Помощь\n/commands - Все команды\n/time - Время и дата\n/translate - Начать перевод\n/exit - Остановить перевод\n/history - История просмотра времени\n/clear - Очистить историю времени", update.getMessage().getChatId());
+                    sendMsgWithReplyButton(Reply.Keyboard6(),"/start - Начать\n/help - Помощь\n/commands - Все команды\n/time - Время и дата\n/translate - Начать перевод\n/exit - Остановить перевод\n/history - История просмотра времени\n/clear - Очистить историю времени", update.getMessage().getChatId());
                 }
             }
 
             if (comSQL.getRole(id).equals("Teacher")) {
                 if (message.equals("/update")) {
                     sendMsg("Выберите id пользователя, которого хотите изменить", update.getMessage().getChatId());
-                    sendMsg("Вот списк всех пользователей:\n" + getInfo(), update.getMessage().getChatId());
+                    sendMsgWithReplyButton(Reply.Keyboard2(),"Вот списк всех пользователей:\n" + getInfo(), update.getMessage().getChatId());
                     sendMsg("В любой момент вы можете вернуться к начальным функциям командой /exit", update.getMessage().getChatId());
                     comSQL.setTypeOfMsg(id, "update_1");
                 }
                 if (message.equals("/show")) {
-                    sendMsg("Вот списк всех пользователей:\n" + getInfo(), update.getMessage().getChatId());
+                    sendMsg("Вот список всех пользователей:\n" + getInfo(), update.getMessage().getChatId());
                 }
                 if (message.equals("/delete")) {
                     sendMsg("Введите id пользователя, которого хотите удалить", update.getMessage().getChatId());
-                    sendMsg("Вот списк всех пользователей:\n" + getInfo(), update.getMessage().getChatId());
+                    sendMsgWithReplyButton(Reply.Keyboard2(),"Вот списк всех пользователей:\n" + getInfo(), update.getMessage().getChatId());
                     comSQL.setTypeOfMsg(id, "delete_1");
                 }
             }

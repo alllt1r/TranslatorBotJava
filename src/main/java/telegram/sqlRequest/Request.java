@@ -9,6 +9,6 @@ public class Request {
     public static final String GET_ALL_DATA = "SELECT * FROM users;";
     public static final String CREATE_TIME_TABLE = "CREATE TABLE IF NOT EXISTS table_%s (time text);";
     public static final String INSERT_INTO_TIME_TABLE = "INSERT INTO table_%s (time) values (%s)";
-    public static final String DELETE_TIME_TABLE = "DROP TABLE table_%s";
+    public static final String DELETE_TIME_TABLE = "DROP TABLE IF EXISTS table_%s";
     public static final String GET_TIME_TABLE_DATA = "SELECT * FROM table_%s;";
 }

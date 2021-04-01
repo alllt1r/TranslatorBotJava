@@ -20,6 +20,17 @@ public class PostgreSQLJDBC {
         return c;
     }
 
+    /*
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY,
+        firstname TEXT,
+        lastname TEXT,
+        role TEXT,
+        type TEXT default 'normal',
+        lastid TEXT default ''
+    );
+     */
+
     @SneakyThrows
     public Statement createStatementFromConnection(Connection connection) {
         Statement stmt = null;
